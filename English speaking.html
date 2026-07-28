@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpeakSmart by NICKS | English Speaking Practice for Marathi Speakers</title>
+<meta name="description" content="SpeakSmart by NICKS — a speaking-only English practice platform built for Marathi speakers. 60 words, 4 speaking modes, zero external APIs, works offline.">
+<meta name="author" content="Nikhil Shinde">
+<meta name="copyright" content="Nikhil Shinde">
+<meta name="creator" content="Nikhil Shinde">
+<meta name="theme-color" content="#FF6B35">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   1. DESIGN TOKENS
+   ========================================================= */
+:root{
+  --primary:#FF6B35;
+  --primary-dark:#e2551f;
+  --secondary:#004E89;
+  --accent:#F7C948;
+  --bg:#FAFAFA;
+  --text:#141625;
+  --text-dim:#5b5f7a;
+  --card-bg:rgba(255,255,255,0.66);
+  --card-solid:#ffffff;
+  --border:rgba(20,22,37,0.09);
+  --shadow:0 20px 45px -22px rgba(20,22,37,0.28);
+  --radius:18px;
+  --beginner:#2FAE66;
+  --intermediate:#F7C948;
+  --advanced:#E23E57;
+  --font-scale:1;
+}
+[data-theme="dark"]{
+  --bg:#0e1016;
+  --text:#eef0fb;
+  --text-dim:#a2a6c4;
+  --card-bg:rgba(28,30,44,0.6);
+  --card-solid:#1a1c2a;
+  --border:rgba(255,255,255,0.09);
+  --shadow:0 20px 45px -18px rgba(0,0,0,0.55);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{ scroll-behavior:smooth; }
+body{
+  font-family:'Inter', sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:background 0.3s ease, color 0.3s ease;
+  font-size:calc(16px * var(--font-scale));
+  line-height:1.5;
+  padding-bottom:70px;
+}
+.devanagari{ font-family:'Noto Sans Devanagari','Inter',sans-serif; }
+h1,h2,h3{ font-weight:800; letter-spacing:-0.01em; }
+button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+button:focus-visible, [tabindex]:focus-visible, a:focus-visible{ outline:3px solid var(--secondary); outline-offset:2px; }
+a{ color:inherit; }
+::selection{ background:var(--primary); color:#fff; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+}
+
+.grad-text{
+  background:linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+.glass{
+  background:var(--card-bg);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.wrap{ max-width:1140px; margin:0 auto; padding:0 clamp(1rem,4vw,2.2rem); }
+
+/* =========================================================
+   2. NAV
+   ========================================================= */
+nav{
+  position:sticky; top:0; z-index:80;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0.85rem clamp(1rem,4vw,2.2rem);
+  background:var(--card-bg);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap; gap:0.6rem;
+}
+.logo{ display:flex; align-items:center; gap:0.5rem; font-weight:800; font-size:1.15rem; white-space:nowrap; }
+.nav-controls{ display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; }
+.streak-chip{
+  display:flex; align-items:center; gap:0.35rem;
+  background:linear-gradient(90deg, var(--primary), var(--accent));
+  color:#1a1200; font-weight:700; font-size:0.82rem;
+  padding:0.35rem 0.7rem; border-radius:999px;
+}
+.icon-btn{
+  width:36px; height:36px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border); background:var(--card-solid);
+  font-size:1rem; transition:transform 0.15s, border-color 0.2s;
+}
+.icon-btn:hover{ transform:translateY(-2px); border-color:var(--primary); }
+.font-size-group{ display:flex; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.font-size-group button{ padding:0.4rem 0.6rem; font-size:0.78rem; font-weight:700; }
+.font-size-group button.active{ background:var(--primary); color:#fff; }
+.offline-dot{
+  width:8px; height:8px; border-radius:50%; background:#2FAE66; display:inline-block;
+  box-shadow:0 0 0 3px rgba(47,174,102,0.2);
+}
+.offline-dot.off{ background:#E23E57; box-shadow:0 0 0 3px rgba(226,62,87,0.2); }
+.status-text{ font-size:0.72rem; color:var(--text-dim); font-weight:600; }
+
+/* =========================================================
+   3. HERO / FLASHCARD
+   ========================================================= */
+.hero{ padding:2.6rem clamp(1rem,4vw,2.2rem) 1rem; }
+.hero-top{
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;
+  max-width:640px; margin:0 auto 1.1rem;
+}
+.progress-label{ font-size:0.82rem; font-weight:700; color:var(--text-dim); }
+.badges-row{ display:flex; gap:0.5rem; }
+.badge{
+  font-size:0.72rem; font-weight:700; padding:0.3rem 0.65rem; border-radius:999px;
+  text-transform:capitalize;
+}
+.badge.beginner{ background:rgba(47,174,102,0.15); color:var(--beginner); }
+.badge.intermediate{ background:rgba(247,201,72,0.22); color:#8a6d00; }
+.badge.advanced{ background:rgba(226,62,87,0.15); color:var(--advanced); }
+.pos-badge{ background:rgba(0,78,137,0.1); color:var(--secondary); }
+
+.flashcard-stage{
+  max-width:640px; margin:0 auto; perspective:1400px;
+}
+.flashcard{
+  position:relative; min-height:300px;
+  transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(.2,.8,.2,1);
+}
+.flashcard.flipped{ transform:rotateY(180deg); }
+.card-face{
+  position:absolute; inset:0; backface-visibility:hidden;
+  border-radius:22px; padding:2.2rem 1.8rem; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+}
+.card-front{
+  background:linear-gradient(150deg, #ffffff, #fff7f0);
+  border:1px solid var(--border); box-shadow:var(--shadow);
+}
+[data-theme="dark"] .card-front{ background:linear-gradient(150deg, #1a1c2a, #171826); }
+.card-back{
+  background:linear-gradient(150deg, var(--secondary), #06294a);
+  color:#fff; transform:rotateY(180deg);
+}
+.word-en{ font-size:clamp(2rem,6vw,2.9rem); font-weight:800; }
+.word-pos{ margin-top:0.4rem; font-size:0.85rem; color:var(--text-dim); font-weight:600; }
+.example-sentence{ margin-top:1.1rem; font-size:1rem; color:var(--text); max-width:460px; }
+.word-marathi{ font-size:2rem; font-weight:700; }
+.sentence-marathi{ margin-top:0.9rem; font-size:1.05rem; max-width:460px; opacity:0.92; }
+.card-hint{ margin-top:1.2rem; font-size:0.76rem; color:var(--text-dim); font-weight:600; }
+[data-theme="dark"] .card-hint{ color:#8f93b8; }
+.card-back .card-hint{ color:#c9d8ea; }
+
+.flash-nav{
+  display:flex; align-items:center; justify-content:center; gap:1rem; margin-top:1.3rem;
+}
+.nav-circle{
+  width:46px; height:46px; border-radius:50%; background:var(--card-solid);
+  border:1px solid var(--border); font-size:1.1rem; display:flex; align-items:center; justify-content:center;
+  transition:transform 0.15s, background 0.2s;
+}
+.nav-circle:hover{ transform:scale(1.08); background:var(--primary); color:#fff; }
+
+.speak-now-btn{
+  display:block; margin:1.7rem auto 0; padding:0.95rem 2.1rem; border-radius:14px;
+  background:linear-gradient(90deg, var(--primary), var(--secondary)); color:#fff;
+  font-weight:700; font-size:1rem; box-shadow:0 16px 30px -14px rgba(255,107,53,0.55);
+  transition:transform 0.15s;
+}
+.speak-now-btn:hover{ transform:translateY(-2px) scale(1.03); }
+
+/* =========================================================
+   4. PRACTICE MODE CARDS
+   ========================================================= */
+.section{ padding:2.6rem clamp(1rem,4vw,2.2rem); }
+.section-head{ text-align:center; max-width:520px; margin:0 auto 2rem; }
+.section-head h2{ font-size:clamp(1.5rem,3vw,2rem); }
+.section-head p{ margin-top:0.5rem; color:var(--text-dim); font-size:0.95rem; }
+
+.modes-grid{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:1.1rem; max-width:1100px; margin:0 auto;
+}
+@media (max-width:900px){ .modes-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:540px){ .modes-grid{ grid-template-columns:1fr; } }
+
+.mode-card{
+  padding:1.6rem 1.3rem; text-align:left; cursor:pointer;
+  border:1px solid var(--border); position:relative; overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.mode-card::before{
+  content:""; position:absolute; inset:0; padding:1px; border-radius:var(--radius);
+  background:linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  opacity:0; transition:opacity 0.2s;
+}
+.mode-card:hover{ transform:translateY(-5px); box-shadow:var(--shadow); }
+.mode-card:hover::before{ opacity:1; }
+.mode-icon{ font-size:1.7rem; }
+.mode-card h3{ margin-top:0.7rem; font-size:1.02rem; }
+.mode-card p{ margin-top:0.35rem; font-size:0.84rem; color:var(--text-dim); }
+.mode-card.active{ outline:2px solid var(--primary); }
+
+/* =========================================================
+   5. PRACTICE PANELS
+   ========================================================= */
+.panel{
+  display:none; max-width:720px; margin:1.6rem auto 0; padding:1.8rem; text-align:center;
+}
+.panel.open{ display:block; animation:panelIn 0.35s ease; }
+@keyframes panelIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+.panel h3{ font-size:1.15rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
+.panel-close{ float:right; font-size:1.1rem; color:var(--text-dim); }
+
+/* Mic pulse */
+.mic-wrap{ margin:1.3rem auto; width:84px; height:84px; position:relative; display:flex; align-items:center; justify-content:center; }
+.mic-ring{
+  position:absolute; inset:0; border-radius:50%; border:3px solid var(--primary); opacity:0;
+}
+.mic-ring.pulsing{ animation:micPulse 1.4s ease-out infinite; }
+.mic-ring:nth-child(2).pulsing{ animation-delay:0.45s; }
+@keyframes micPulse{
+  0%{ transform:scale(0.6); opacity:0.7; }
+  100%{ transform:scale(1.6); opacity:0; }
+}
+.mic-core{
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg, var(--primary), var(--secondary));
+  display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#fff; z-index:1;
+}
+
+/* Shadow speak word highlight */
+.shadow-sentence{ font-size:1.25rem; font-weight:600; margin-top:1rem; line-height:1.7; }
+.shadow-sentence span{ padding:0.05em 0.12em; border-radius:5px; transition:background 0.25s, color 0.25s; }
+.shadow-sentence span.hl{ background:var(--accent); color:#332400; }
+.shadow-translation{ margin-top:1rem; font-size:1.1rem; color:var(--secondary); min-height:1.6em; font-weight:600; }
+
+/* countdown overlay */
+.countdown-num{ font-size:3.4rem; font-weight:800; color:var(--primary); margin:0.6rem 0; }
+
+/* waveform */
+.wave{ display:flex; align-items:center; justify-content:center; gap:5px; height:52px; margin:1rem auto; }
+.wave span{
+  display:block; width:6px; border-radius:4px; height:14px;
+  background:linear-gradient(180deg, var(--primary), var(--secondary));
+  transition:height 0.12s ease;
+}
+
+/* scenario */
+.scenario-select{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:0.6rem; margin-top:1rem;
+}
+@media (max-width:640px){ .scenario-select{ grid-template-columns:repeat(2,1fr); } }
+.scenario-btn{
+  padding:0.7rem 0.4rem; border-radius:12px; border:1px solid var(--border); background:var(--card-solid);
+  font-size:0.82rem; font-weight:700; transition:transform 0.15s, border-color 0.2s;
+}
+.scenario-btn:hover{ transform:translateY(-2px); border-color:var(--primary); }
+.scenario-btn.active{ background:linear-gradient(90deg,var(--primary),var(--secondary)); color:#fff; border-color:transparent; }
+.scenario-line{ font-size:1.2rem; font-weight:600; margin-top:1.3rem; min-height:2.4em; }
+.scenario-meta{ font-size:0.8rem; color:var(--text-dim); margin-top:0.4rem; }
+.timer-pill{
+  display:inline-block; margin-top:0.8rem; padding:0.3rem 0.8rem; border-radius:999px;
+  background:rgba(0,78,137,0.1); color:var(--secondary); font-weight:700; font-size:0.85rem;
+}
+
+/* Q&A */
+.qna-question{ font-size:1.25rem; font-weight:700; margin-top:1rem; }
+.qna-marathi{ margin-top:0.5rem; font-size:1rem; color:var(--secondary); }
+.qna-answer{ margin-top:1rem; font-size:0.95rem; color:var(--text-dim); background:rgba(0,78,137,0.06); padding:0.9rem; border-radius:12px; display:none; }
+.qna-answer.show{ display:block; }
+.confidence-row{ display:flex; gap:0.7rem; justify-content:center; margin-top:1.1rem; }
+
+/* Tongue twister */
+.twister-text{ font-size:1.4rem; font-weight:700; margin-top:1.1rem; line-height:1.5; }
+.twister-meaning{ margin-top:0.6rem; font-size:0.92rem; color:var(--text-dim); }
+.wps-result{ margin-top:0.9rem; font-weight:700; color:var(--secondary); min-height:1.4em; }
+
+/* Buttons reused */
+.btn{
+  padding:0.75rem 1.4rem; border-radius:12px; font-weight:700; font-size:0.9rem;
+  transition:transform 0.15s, box-shadow 0.15s;
+}
+.btn:hover{ transform:translateY(-2px); }
+.btn-fill{ background:linear-gradient(90deg,var(--primary),var(--secondary)); color:#fff; box-shadow:0 14px 26px -14px rgba(255,107,53,0.5); }
+.btn-ghost{ background:var(--card-solid); border:1px solid var(--border); }
+.btn-row{ display:flex; gap:0.7rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem; }
+
+/* =========================================================
+   6. STATS DASHBOARD
+   ========================================================= */
+.stats-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; max-width:900px; margin:0 auto; }
+@media (max-width:700px){ .stats-grid{ grid-template-columns:1fr; } }
+.stat-card{ padding:1.6rem; display:flex; align-items:center; gap:1.1rem; }
+.ring{
+  width:78px; height:78px; border-radius:50%;
+  background:conic-gradient(var(--primary) calc(var(--pct,0)*1%), rgba(0,0,0,0.08) 0);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+[data-theme="dark"] .ring{ background:conic-gradient(var(--primary) calc(var(--pct,0)*1%), rgba(255,255,255,0.12) 0); }
+.ring-inner{
+  width:60px; height:60px; border-radius:50%; background:var(--card-solid);
+  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.95rem;
+}
+.stat-label{ font-size:0.82rem; color:var(--text-dim); font-weight:600; }
+.stat-value{ font-size:1.15rem; font-weight:800; margin-top:0.15rem; }
+
+/* daily goal + badges */
+.goal-card{ max-width:900px; margin:1.2rem auto 0; padding:1.6rem; display:flex; align-items:center; gap:1.4rem; flex-wrap:wrap; }
+.goal-ring{ width:70px; height:70px; border-radius:50%; flex-shrink:0;
+  background:conic-gradient(var(--accent) calc(var(--gpct,0)*1%), rgba(0,0,0,0.08) 0); display:flex; align-items:center; justify-content:center; }
+[data-theme="dark"] .goal-ring{ background:conic-gradient(var(--accent) calc(var(--gpct,0)*1%), rgba(255,255,255,0.12) 0); }
+.goal-ring-inner{ width:54px; height:54px; border-radius:50%; background:var(--card-solid); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.82rem; }
+.badges-list{ display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.6rem; }
+.badge-pill{
+  font-size:0.76rem; font-weight:700; padding:0.35rem 0.7rem; border-radius:999px;
+  background:rgba(247,201,72,0.2); color:#8a6d00; opacity:0.35;
+}
+.badge-pill.unlocked{ opacity:1; background:linear-gradient(90deg,var(--primary),var(--accent)); color:#211500; }
+
+/* Speaking log */
+.log-list{ max-width:640px; margin:1rem auto 0; max-height:260px; overflow-y:auto; padding:0.4rem; }
+.log-item{
+  display:flex; justify-content:space-between; align-items:center; padding:0.7rem 0.9rem;
+  border-bottom:1px solid var(--border); font-size:0.88rem;
+}
+.log-item:last-child{ border-bottom:none; }
+.log-item .tag{ font-size:0.72rem; color:var(--text-dim); }
+.empty-log{ text-align:center; color:var(--text-dim); font-size:0.88rem; padding:1.2rem; }
+
+/* =========================================================
+   7. DAILY CHALLENGE
+   ========================================================= */
+.challenge-card{
+  max-width:900px; margin:0 auto; padding:1.8rem; display:flex; align-items:center;
+  justify-content:space-between; gap:1rem; flex-wrap:wrap;
+  background:linear-gradient(120deg, rgba(255,107,53,0.09), rgba(0,78,137,0.09));
+}
+.challenge-card h3{ font-size:1.05rem; }
+.challenge-card p{ font-size:0.86rem; color:var(--text-dim); margin-top:0.3rem; max-width:420px; }
+
+/* =========================================================
+   8. FOOTER
+   ========================================================= */
+footer{
+  margin-top:2.4rem; padding:2.8rem clamp(1rem,4vw,2.2rem) 2.4rem; text-align:center;
+  background:linear-gradient(160deg, var(--secondary), #021f38); color:#eaf1fa;
+}
+.footer-logo{ font-weight:800; font-size:1.15rem; display:inline-flex; gap:0.4rem; align-items:center; }
+.footer-quote{ max-width:460px; margin:1.3rem auto 0; font-style:italic; font-size:0.98rem; line-height:1.6; }
+.footer-quote .devanagari{ display:block; margin-top:0.3rem; font-style:normal; }
+.footer-attr{ display:block; margin-top:0.5rem; font-size:0.78rem; color:#a9c2d8; font-style:normal; }
+.footer-meta{ margin-top:1.6rem; font-size:0.82rem; color:#c7d9e8; }
+.footer-copy{ margin-top:0.25rem; font-size:0.74rem; color:#8fa9bf; }
+.footer-powered{
+  display:inline-block; margin-top:0.9rem; font-size:0.68rem; font-weight:700; letter-spacing:0.03em;
+  padding:0.3rem 0.7rem; border:1px solid rgba(255,255,255,0.2); border-radius:999px; color:#c7d9e8;
+}
+
+/* =========================================================
+   9. TOASTS + CONFETTI + WATERMARK
+   ========================================================= */
+#toastHost{ position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:0.5rem; align-items:center; }
+.toast{
+  background:var(--text); color:var(--bg); padding:0.7rem 1.2rem; border-radius:12px; font-size:0.85rem; font-weight:600;
+  box-shadow:0 14px 30px -12px rgba(0,0,0,0.4);
+  animation:toastIn 0.45s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes toastIn{
+  0%{ opacity:0; transform:translateY(-16px) scale(0.9); }
+  60%{ opacity:1; transform:translateY(4px) scale(1.02); }
+  100%{ transform:translateY(0) scale(1); }
+}
+.confetti-piece{ position:fixed; top:-10px; width:8px; height:14px; z-index:300; pointer-events:none; }
+@keyframes confettiFall{
+  to{ transform:translateY(105vh) rotate(540deg); opacity:0.2; }
+}
+.watermark{
+  position:fixed; bottom:16px; right:16px; z-index:90; display:flex; align-items:center; gap:0.4rem;
+  background:rgba(20,22,37,0.92); color:#eef0fb; padding:0.5rem 0.85rem; border-radius:999px;
+  font-size:0.72rem; font-weight:600; box-shadow:0 10px 24px -8px rgba(0,0,0,0.5);
+}
+.watermark .dot{ width:6px; height:6px; border-radius:50%; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+@media (max-width:480px){ .watermark .full{ display:none; } }
+
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+</style>
+</head>
+<body data-theme="light">
+
+<div id="toastHost" aria-live="polite"></div>
+
+<nav>
+  <div class="logo">🎙️ SpeakSmart <span class="grad-text">by NICKS</span></div>
+  <div class="nav-controls">
+    <span class="streak-chip">🔥 <span id="streakCount">0</span> day streak</span>
+    <div class="font-size-group" role="group" aria-label="Font size">
+      <button data-size="0.9" aria-label="Small text">S</button>
+      <button data-size="1" class="active" aria-label="Medium text">M</button>
+      <button data-size="1.15" aria-label="Large text">L</button>
+    </div>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
+    <span class="status-text"><span class="offline-dot" id="offlineDot"></span> <span id="statusLabel">Online</span></span>
+  </div>
+</nav>
+
+<!-- ===================== HERO / FLASHCARD ===================== -->
+<section class="hero">
+  <div class="hero-top">
+    <span class="progress-label" id="progressLabel">Word 1 of 60</span>
+    <div class="badges-row">
+      <span class="badge pos-badge" id="posBadge">noun</span>
+      <span class="badge beginner" id="diffBadge">beginner</span>
+    </div>
+  </div>
+
+  <div class="flashcard-stage">
+    <div class="flashcard" id="flashcard">
+      <div class="card-face card-front">
+        <div class="word-en" id="wordEn">beautiful</div>
+        <div class="word-pos" id="wordPos">adjective</div>
+        <p class="example-sentence" id="exampleSentence">The sunset is beautiful today.</p>
+        <span class="card-hint">Click card or press Enter to reveal Marathi ↻</span>
+      </div>
+      <div class="card-face card-back">
+        <div class="word-marathi" id="wordMarathi">सुंदर</div>
+        <p class="sentence-marathi devanagari" id="sentenceMarathi">आजचा सूर्यास्त सुंदर आहे.</p>
+        <span class="card-hint">Click card to flip back ↻</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flash-nav">
+    <button class="nav-circle" id="prevWordBtn" aria-label="Previous word">←</button>
+    <button class="nav-circle" id="flipBtn" aria-label="Flip card">⟲</button>
+    <button class="nav-circle" id="nextWordBtn" aria-label="Next word">→</button>
+  </div>
+
+  <button class="speak-now-btn" id="speakNowBtn">🎙️ Speak Now — choose a practice mode</button>
+</section>
+
+<!-- ===================== PRACTICE MODES ===================== -->
+<section class="section" id="modesSection">
+  <div class="section-head">
+    <h2>Four ways to make you talk</h2>
+    <p>Every mode below is built around one rule: you must speak out loud.</p>
+  </div>
+
+  <div class="modes-grid">
+    <div class="mode-card glass" data-mode="shadow" tabindex="0" role="button">
+      <div class="mode-icon">🎙️</div>
+      <h3>Shadow Speak</h3>
+      <p>Read the sentence aloud in real time, then check yourself against the Marathi meaning.</p>
+    </div>
+    <div class="mode-card glass" data-mode="scenario" tabindex="0" role="button">
+      <div class="mode-icon">🏪</div>
+      <h3>Scenario Simulator</h3>
+      <p>Step into a market, hospital, or airport and speak your way through real dialogue.</p>
+    </div>
+    <div class="mode-card glass" data-mode="qna" tabindex="0" role="button">
+      <div class="mode-icon">❓</div>
+      <h3>Question &amp; Answer</h3>
+      <p>Answer out loud in 30 seconds, then compare with a sample response.</p>
+    </div>
+    <div class="mode-card glass" data-mode="twister" tabindex="0" role="button">
+      <div class="mode-icon">👅</div>
+      <h3>Tongue Twister</h3>
+      <p>Race the clock on classic English tongue twisters and track your speaking speed.</p>
+    </div>
+  </div>
+
+  <!-- ---- Shadow Speak Panel ---- -->
+  <div class="panel glass" id="panel-shadow">
+    <button class="panel-close" data-close aria-label="Close panel">✕</button>
+    <h3>🎙️ Shadow Speak</h3>
+    <div class="mic-wrap" id="shadowMic">
+      <div class="mic-ring"></div><div class="mic-ring"></div>
+      <div class="mic-core">🎙️</div>
+    </div>
+    <p class="shadow-sentence" id="shadowSentence"></p>
+    <p class="shadow-translation" id="shadowTranslation"></p>
+    <div class="btn-row">
+      <button class="btn btn-fill" id="shadowStartBtn">Start reading aloud</button>
+      <button class="btn btn-ghost" id="shadowSkipBtn">Skip to next sentence</button>
+    </div>
+  </div>
+
+  <!-- ---- Scenario Simulator Panel ---- -->
+  <div class="panel glass" id="panel-scenario">
+    <button class="panel-close" data-close aria-label="Close panel">✕</button>
+    <h3>🏪 Scenario Simulator</h3>
+    <div class="scenario-select" id="scenarioSelect"></div>
+    <div class="scenario-meta" id="scenarioMeta"></div>
+    <p class="scenario-line" id="scenarioLine">Pick a scenario above to begin.</p>
+    <div class="timer-pill" id="scenarioTimer" style="display:none;">0.0s to respond</div>
+    <div class="btn-row">
+      <button class="btn btn-fill" id="scenarioNextBtn" disabled>Show next line</button>
+    </div>
+  </div>
+
+  <!-- ---- Q&A Panel ---- -->
+  <div class="panel glass" id="panel-qna">
+    <button class="panel-close" data-close aria-label="Close panel">✕</button>
+    <h3>❓ Question &amp; Answer</h3>
+    <p class="qna-question" id="qnaQuestion"></p>
+    <p class="qna-marathi devanagari" id="qnaMarathi"></p>
+    <div class="countdown-num" id="qnaTimer">30</div>
+    <div class="qna-answer" id="qnaAnswer"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="qnaRevealBtn">Reveal sample answer</button>
+      <button class="btn btn-fill" id="qnaNextBtn">Next question</button>
+    </div>
+    <div class="confidence-row">
+      <button class="btn btn-ghost" id="confGoodBtn">🙂 I spoke well</button>
+      <button class="btn btn-ghost" id="confStruggleBtn">😅 I struggled</button>
+    </div>
+  </div>
+
+  <!-- ---- Tongue Twister Panel ---- -->
+  <div class="panel glass" id="panel-twister">
+    <button class="panel-close" data-close aria-label="Close panel">✕</button>
+    <h3>👅 Tongue Twister Challenge</h3>
+    <p class="twister-text" id="twisterText"></p>
+    <p class="twister-meaning devanagari" id="twisterMeaning"></p>
+    <div class="btn-row">
+      <button class="btn btn-fill" id="twisterStartBtn">Start speaking</button>
+      <button class="btn btn-ghost" id="twisterDoneBtn" disabled>I finished!</button>
+    </div>
+    <p class="wps-result" id="wpsResult"></p>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="twisterNextBtn">Next twister</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== START SPEAKING OVERLAY MODE ===================== -->
+<section class="section" id="micSection" style="max-width:640px;margin:0 auto;text-align:center;">
+  <div class="glass" style="padding:1.8rem;">
+    <h3 style="font-size:1.05rem;">Visual Speaking Simulator</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-top:0.4rem;">No microphone is recorded or uploaded — this is a visual cue to help you pace your speaking.</p>
+    <div class="countdown-num" id="micCountdown" style="display:none;"></div>
+    <div class="wave" id="micWave" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <p id="micEncourage" class="devanagari" style="min-height:1.6em; font-weight:600; color:var(--secondary);"></p>
+    <div class="btn-row">
+      <button class="btn btn-fill" id="micStartBtn">Start Speaking</button>
+      <button class="btn btn-ghost" id="micDoneBtn" style="display:none;">Done speaking</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATS DASHBOARD ===================== -->
+<section class="section">
+  <div class="section-head">
+    <h2>Your speaking stats</h2>
+    <p>Small, honest numbers that build up over real practice.</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card glass">
+      <div class="ring" id="ringWords" style="--pct:0;"><div class="ring-inner"><span id="wordsLearnedNum">0</span>/60</div></div>
+      <div><div class="stat-label">Words practiced</div><div class="stat-value" id="wordsLearnedLabel">0 of 60</div></div>
+    </div>
+    <div class="stat-card glass">
+      <div class="ring" id="ringTime" style="--pct:0;"><div class="ring-inner"><span id="timePracticedNum">0</span>m</div></div>
+      <div><div class="stat-label">Time practiced</div><div class="stat-value" id="timePracticedLabel">0 minutes</div></div>
+    </div>
+    <div class="stat-card glass">
+      <div class="ring" id="ringStreak" style="--pct:0;"><div class="ring-inner"><span id="streakNum">0</span>d</div></div>
+      <div><div class="stat-label">Voice streak</div><div class="stat-value" id="streakLabel">0 days</div></div>
+    </div>
+  </div>
+
+  <div class="goal-card glass">
+    <div class="goal-ring" id="goalRing" style="--gpct:0;"><div class="goal-ring-inner"><span id="goalNum">0</span>/5</div></div>
+    <div style="flex:1;min-width:200px;">
+      <div class="stat-label">Daily goal — speak 5 sentences today</div>
+      <div class="badges-list" id="badgesList"></div>
+    </div>
+  </div>
+
+  <div class="challenge-card glass" style="margin-top:1.1rem;">
+    <div>
+      <h3 id="challengeTitle">Today's challenge</h3>
+      <p id="challengeText">Loading a fresh challenge for you…</p>
+    </div>
+    <button class="btn btn-fill" id="challengeGoBtn">Start challenge</button>
+  </div>
+
+  <div class="section-head" style="margin-top:2.2rem;">
+    <h2>Speaking log</h2>
+    <p>What you've practiced, marked at the moment you said it out loud.</p>
+  </div>
+  <div class="glass log-list" id="logList">
+    <div class="empty-log">Nothing logged yet — practice a word or scenario to start your log.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">🎙️ SpeakSmart <span class="grad-text" style="-webkit-text-fill-color:#F7C948;background:none;color:#F7C948;">by NICKS</span></div>
+  <div class="footer-quote">
+    "Speak English Fearlessly. Think Globally."
+    <span class="devanagari">आत्मविश्वासाने इंग्रजी बोला, जगाशी जोडा.</span>
+    <span class="footer-attr">— Nikhil Shinde</span>
+  </div>
+  <div class="footer-meta">Developed with ❤️ by Nikhil Shinde</div>
+  <div class="footer-copy">© 2026 SpeakSmart by NICKS. All Rights Reserved. · Last visited: <span id="lastVisited">—</span></div>
+  <div class="footer-powered">Powered by NICKS</div>
+</footer>
+
+<div class="watermark"><span class="dot"></span><span class="full">Developed by</span> Nikhil Shinde</div>
+
+<script>
+/* =========================================================
+   WORD DATABASE — 60 words, beginner → advanced
+   ========================================================= */
+const WORDS = [
+  {id:1,english:"beautiful",marathi:"सुंदर",partOfSpeech:"adjective",difficulty:"beginner",exampleSentence:"The sunset is beautiful today.",sentenceMarathi:"आजचा सूर्यास्त सुंदर आहे.",speakingPrompt:"Describe something beautiful you saw recently.",promptMarathi:"अलीकडे तुम्हाला दिसलेल्या एखाद्या सुंदर गोष्टीचे वर्णन करा."},
+  {id:2,english:"happy",marathi:"आनंदी",partOfSpeech:"adjective",difficulty:"beginner",exampleSentence:"She looks very happy today.",sentenceMarathi:"ती आज खूप आनंदी दिसते आहे.",speakingPrompt:"Talk about a moment that made you truly happy.",promptMarathi:"तुम्हाला खरोखर आनंदी करणाऱ्या एका क्षणाबद्दल बोला."},
+  {id:3,english:"family",marathi:"कुटुंब",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"My family lives in Pune.",sentenceMarathi:"माझे कुटुंब पुण्यात राहते.",speakingPrompt:"Introduce your family in a few sentences.",promptMarathi:"काही वाक्यांत तुमच्या कुटुंबाची ओळख करून द्या."},
+  {id:4,english:"water",marathi:"पाणी",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"Please give me a glass of water.",sentenceMarathi:"कृपया मला एक ग्लास पाणी द्या.",speakingPrompt:"Explain why drinking enough water is important.",promptMarathi:"पुरेसे पाणी पिणे का महत्त्वाचे आहे ते सांगा."},
+  {id:5,english:"food",marathi:"अन्न",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"This food tastes delicious.",sentenceMarathi:"हे अन्न खूप चविष्ट आहे.",speakingPrompt:"Describe your favorite food and why you like it.",promptMarathi:"तुमचा आवडता पदार्थ आणि तो का आवडतो ते सांगा."},
+  {id:6,english:"house",marathi:"घर",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"We bought a new house last year.",sentenceMarathi:"आम्ही गेल्या वर्षी नवीन घर घेतले.",speakingPrompt:"Describe the house you grew up in.",promptMarathi:"तुम्ही ज्या घरात लहानाचे मोठे झालात त्याचे वर्णन करा."},
+  {id:7,english:"friend",marathi:"मित्र",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"He is my best friend.",sentenceMarathi:"तो माझा सर्वात चांगला मित्र आहे.",speakingPrompt:"Talk about a good friend and what you like about them.",promptMarathi:"एका चांगल्या मित्राबद्दल आणि तुम्हाला त्याच्याबद्दल काय आवडते ते सांगा."},
+  {id:8,english:"school",marathi:"शाळा",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"My school starts at eight in the morning.",sentenceMarathi:"माझी शाळा सकाळी आठ वाजता सुरू होते.",speakingPrompt:"Describe your favorite memory from school.",promptMarathi:"शाळेतील तुमची आवडती आठवण सांगा."},
+  {id:9,english:"walk",marathi:"चालणे",partOfSpeech:"verb",difficulty:"beginner",exampleSentence:"I like to walk in the park every evening.",sentenceMarathi:"मला दररोज संध्याकाळी बागेत चालायला आवडते.",speakingPrompt:"Describe your daily walking routine.",promptMarathi:"तुमच्या रोजच्या चालण्याच्या सवयीबद्दल सांगा."},
+  {id:10,english:"run",marathi:"धावणे",partOfSpeech:"verb",difficulty:"beginner",exampleSentence:"He runs every morning before work.",sentenceMarathi:"तो कामाआधी दररोज सकाळी धावतो.",speakingPrompt:"Talk about a time you had to run somewhere quickly.",promptMarathi:"तुम्हाला कुठेतरी लवकर धावत जावे लागले त्या वेळेबद्दल सांगा."},
+  {id:11,english:"book",marathi:"पुस्तक",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"This book is very interesting.",sentenceMarathi:"हे पुस्तक खूप रंजक आहे.",speakingPrompt:"Talk about a book you enjoyed reading.",promptMarathi:"तुम्हाला आवडलेल्या एका पुस्तकाबद्दल सांगा."},
+  {id:12,english:"morning",marathi:"सकाळ",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"I drink tea every morning.",sentenceMarathi:"मी दररोज सकाळी चहा पितो.",speakingPrompt:"Describe your usual morning routine.",promptMarathi:"तुमच्या नेहमीच्या सकाळच्या दिनक्रमाचे वर्णन करा."},
+  {id:13,english:"night",marathi:"रात्र",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"The sky was clear last night.",sentenceMarathi:"काल रात्री आकाश स्वच्छ होते.",speakingPrompt:"Talk about what you usually do before going to sleep at night.",promptMarathi:"रात्री झोपण्यापूर्वी तुम्ही सहसा काय करता ते सांगा."},
+  {id:14,english:"help",marathi:"मदत",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"Can you help me with this bag?",sentenceMarathi:"तुम्ही मला या बॅगेत मदत कराल का?",speakingPrompt:"Talk about a time someone helped you a lot.",promptMarathi:"कोणीतरी तुम्हाला खूप मदत केली त्या वेळेबद्दल सांगा."},
+  {id:15,english:"love",marathi:"प्रेम",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"She loves spending time with her family.",sentenceMarathi:"तिला तिच्या कुटुंबासोबत वेळ घालवायला आवडते.",speakingPrompt:"Talk about something or someone you love.",promptMarathi:"तुम्हाला आवडणाऱ्या एखाद्या गोष्टीबद्दल किंवा व्यक्तीबद्दल सांगा."},
+  {id:16,english:"work",marathi:"काम",partOfSpeech:"noun",difficulty:"beginner",exampleSentence:"I have a lot of work today.",sentenceMarathi:"आज माझ्याकडे खूप काम आहे.",speakingPrompt:"Describe what kind of work you do or want to do.",promptMarathi:"तुम्ही कोणत्या प्रकारचे काम करता किंवा करू इच्छिता ते सांगा."},
+  {id:17,english:"play",marathi:"खेळणे",partOfSpeech:"verb",difficulty:"beginner",exampleSentence:"Children love to play in the garden.",sentenceMarathi:"मुलांना बागेत खेळायला आवडते.",speakingPrompt:"Talk about a game you liked to play as a child.",promptMarathi:"लहानपणी तुम्हाला आवडणाऱ्या एका खेळाबद्दल सांगा."},
+  {id:18,english:"eat",marathi:"खाणे",partOfSpeech:"verb",difficulty:"beginner",exampleSentence:"We eat dinner together every night.",sentenceMarathi:"आम्ही दररोज रात्री एकत्र जेवतो.",speakingPrompt:"Describe your favorite meal of the day.",promptMarathi:"दिवसातील तुमच्या आवडत्या जेवणाचे वर्णन करा."},
+  {id:19,english:"sleep",marathi:"झोपणे",partOfSpeech:"verb",difficulty:"beginner",exampleSentence:"I usually sleep by eleven o'clock.",sentenceMarathi:"मी सहसा अकरा वाजेपर्यंत झोपतो.",speakingPrompt:"Talk about how many hours you sleep and why.",promptMarathi:"तुम्ही किती तास झोपता आणि का ते सांगा."},
+  {id:20,english:"talk",marathi:"बोलणे",partOfSpeech:"verb",difficulty:"beginner",exampleSentence:"Let's talk about your plans for the weekend.",sentenceMarathi:"चला तुमच्या शनिवार-रविवारच्या योजनांबद्दल बोलूया.",speakingPrompt:"Talk about someone you enjoy talking to.",promptMarathi:"ज्याच्याशी बोलायला तुम्हाला आवडते अशा व्यक्तीबद्दल सांगा."},
+  {id:21,english:"confident",marathi:"आत्मविश्वासू",partOfSpeech:"adjective",difficulty:"intermediate",exampleSentence:"She felt confident before the interview.",sentenceMarathi:"मुलाखतीपूर्वी तिला आत्मविश्वास वाटला.",speakingPrompt:"Talk about a moment you felt confident.",promptMarathi:"तुम्हाला आत्मविश्वास वाटलेल्या एका क्षणाबद्दल सांगा."},
+  {id:22,english:"opportunity",marathi:"संधी",partOfSpeech:"noun",difficulty:"intermediate",exampleSentence:"This job is a great opportunity for me.",sentenceMarathi:"ही नोकरी माझ्यासाठी एक उत्तम संधी आहे.",speakingPrompt:"Describe an opportunity you are grateful for.",promptMarathi:"तुम्ही ज्याबद्दल कृतज्ञ आहात अशा एका संधीचे वर्णन करा."},
+  {id:23,english:"achieve",marathi:"साध्य करणे",partOfSpeech:"verb",difficulty:"intermediate",exampleSentence:"He worked hard to achieve his goals.",sentenceMarathi:"त्याने आपले ध्येय साध्य करण्यासाठी कठोर परिश्रम केले.",speakingPrompt:"Talk about a goal you want to achieve this year.",promptMarathi:"या वर्षी तुम्हाला साध्य करायचे असलेल्या एका ध्येयाबद्दल सांगा."},
+  {id:24,english:"describe",marathi:"वर्णन करणे",partOfSpeech:"verb",difficulty:"intermediate",exampleSentence:"Can you describe your ideal weekend?",sentenceMarathi:"तुम्ही तुमचा आदर्श शनिवार-रविवार वर्णन करू शकाल का?",speakingPrompt:"Describe your ideal weekend in detail.",promptMarathi:"तुमच्या आदर्श शनिवार-रविवारचे सविस्तर वर्णन करा."},
+  {id:25,english:"experience",marathi:"अनुभव",partOfSpeech:"noun",difficulty:"intermediate",exampleSentence:"Traveling abroad was a great experience.",sentenceMarathi:"परदेशात प्रवास करणे हा एक उत्तम अनुभव होता.",speakingPrompt:"Talk about a memorable experience from last year.",promptMarathi:"गेल्या वर्षीच्या एका संस्मरणीय अनुभवाबद्दल सांगा."},
+  {id:26,english:"comfortable",marathi:"आरामदायक",partOfSpeech:"adjective",difficulty:"intermediate",exampleSentence:"This chair is very comfortable to sit in.",sentenceMarathi:"या खुर्चीवर बसणे खूप आरामदायक आहे.",speakingPrompt:"Describe a place where you feel most comfortable.",promptMarathi:"तुम्हाला सर्वात आरामदायक वाटणाऱ्या एका ठिकाणाचे वर्णन करा."},
+  {id:27,english:"decision",marathi:"निर्णय",partOfSpeech:"noun",difficulty:"intermediate",exampleSentence:"It was a difficult decision to make.",sentenceMarathi:"तो घेण्यासाठी एक कठीण निर्णय होता.",speakingPrompt:"Talk about a big decision you made recently.",promptMarathi:"अलीकडे तुम्ही घेतलेल्या एका मोठ्या निर्णयाबद्दल सांगा."},
+  {id:28,english:"environment",marathi:"पर्यावरण",partOfSpeech:"noun",difficulty:"intermediate",exampleSentence:"We should take care of our environment.",sentenceMarathi:"आपण आपल्या पर्यावरणाची काळजी घेतली पाहिजे.",speakingPrompt:"Talk about one thing you do to protect the environment.",promptMarathi:"पर्यावरण वाचवण्यासाठी तुम्ही करत असलेल्या एका गोष्टीबद्दल सांगा."},
+  {id:29,english:"communicate",marathi:"संवाद साधणे",partOfSpeech:"verb",difficulty:"intermediate",exampleSentence:"It is important to communicate clearly at work.",sentenceMarathi:"कामाच्या ठिकाणी स्पष्टपणे संवाद साधणे महत्त्वाचे आहे.",speakingPrompt:"Talk about how you communicate with your colleagues.",promptMarathi:"तुम्ही तुमच्या सहकाऱ्यांशी कसे संवाद साधता ते सांगा."},
+  {id:30,english:"improve",marathi:"सुधारणे",partOfSpeech:"verb",difficulty:"intermediate",exampleSentence:"I want to improve my English speaking skills.",sentenceMarathi:"मला माझे इंग्रजी बोलण्याचे कौशल्य सुधारायचे आहे.",speakingPrompt:"Talk about one skill you want to improve this year.",promptMarathi:"या वर्षी तुम्हाला सुधारायचे असलेल्या एका कौशल्याबद्दल सांगा."},
+  {id:31,english:"challenge",marathi:"आव्हान",partOfSpeech:"noun",difficulty:"intermediate",exampleSentence:"Learning a new language is a real challenge.",sentenceMarathi:"नवीन भाषा शिकणे हे खरे आव्हान आहे.",speakingPrompt:"Talk about a challenge you overcame recently.",promptMarathi:"अलीकडे तुम्ही पार केलेल्या एका आव्हानाबद्दल सांगा."},
+  {id:32,english:"memory",marathi:"आठवण",partOfSpeech:"noun",difficulty:"intermediate",exampleSentence:"That trip left me with wonderful memories.",sentenceMarathi:"त्या सहलीने मला सुंदर आठवणी दिल्या.",speakingPrompt:"Share a childhood memory you cherish.",promptMarathi:"तुम्ही जपलेल्या एका लहानपणीच्या आठवणीबद्दल सांगा."},
+  {id:33,english:"imagine",marathi:"कल्पना करणे",partOfSpeech:"verb",difficulty:"intermediate",exampleSentence:"Imagine living in a city by the sea.",sentenceMarathi:"समुद्रकिनारी असलेल्या शहरात राहण्याची कल्पना करा.",speakingPrompt:"Describe a place you would love to imagine living in.",promptMarathi:"तुम्हाला राहण्याची कल्पना करायला आवडेल अशा एका ठिकाणाचे वर्णन करा."},
+  {id:34,english:"celebrate",marathi:"साजरा करणे",partOfSpeech:"verb",difficulty:"intermediate",exampleSentence:"We celebrate Diwali with our whole family.",sentenceMarathi:"आम्ही संपूर्ण कुटुंबासोबत दिवाळी साजरी करतो.",speakingPrompt:"Talk about how you celebrate your favorite festival.",promptMarathi:"तुम्ही तुमचा आवडता सण कसा साजरा करता ते सांगा."},
+  {id:35,english:"encourage",marathi:"प्रोत्साहन देणे",partOfSpeech:"verb",difficulty:"intermediate",exampleSentence:"My teacher always encourages me to speak up.",sentenceMarathi:"माझे शिक्षक मला नेहमी बोलण्यासाठी प्रोत्साहन देतात.",speakingPrompt:"Talk about someone who encourages you.",promptMarathi:"तुम्हाला प्रोत्साहन देणाऱ्या एका व्यक्तीबद्दल सांगा."},
+  {id:36,english:"patience",marathi:"संयम",partOfSpeech:"noun",difficulty:"intermediate",exampleSentence:"Learning a language requires a lot of patience.",sentenceMarathi:"भाषा शिकण्यासाठी खूप संयमाची गरज असते.",speakingPrompt:"Talk about a time you had to be patient.",promptMarathi:"तुम्हाला संयम बाळगावा लागला त्या वेळेबद्दल सांगा."},
+  {id:37,english:"curious",marathi:"जिज्ञासू",partOfSpeech:"adjective",difficulty:"intermediate",exampleSentence:"Children are naturally curious about the world.",sentenceMarathi:"मुले स्वाभाविकपणे जगाबद्दल जिज्ञासू असतात.",speakingPrompt:"Talk about something you are curious to learn.",promptMarathi:"तुम्हाला शिकायला उत्सुक असलेल्या एका गोष्टीबद्दल सांगा."},
+  {id:38,english:"honest",marathi:"प्रामाणिक",partOfSpeech:"adjective",difficulty:"intermediate",exampleSentence:"It is always best to be honest with your friends.",sentenceMarathi:"मित्रांशी नेहमी प्रामाणिक राहणे उत्तम असते.",speakingPrompt:"Talk about why honesty is important to you.",promptMarathi:"प्रामाणिकपणा तुमच्यासाठी का महत्त्वाचा आहे ते सांगा."},
+  {id:39,english:"generous",marathi:"उदार",partOfSpeech:"adjective",difficulty:"intermediate",exampleSentence:"He is very generous with his time and money.",sentenceMarathi:"तो त्याच्या वेळेच्या आणि पैशाच्या बाबतीत खूप उदार आहे.",speakingPrompt:"Talk about the most generous person you know.",promptMarathi:"तुम्हाला माहीत असलेल्या सर्वात उदार व्यक्तीबद्दल सांगा."},
+  {id:40,english:"responsible",marathi:"जबाबदार",partOfSpeech:"adjective",difficulty:"intermediate",exampleSentence:"She is responsible for managing the whole team.",sentenceMarathi:"संपूर्ण टीमचे व्यवस्थापन करण्याची जबाबदारी तिच्यावर आहे.",speakingPrompt:"Talk about something you feel responsible for.",promptMarathi:"तुम्हाला ज्याची जबाबदारी वाटते अशा एका गोष्टीबद्दल सांगा."},
+  {id:41,english:"eloquent",marathi:"वाक्पटू",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"The speaker gave an eloquent speech at the ceremony.",sentenceMarathi:"वक्त्याने समारंभात एक वाक्पटू भाषण दिले.",speakingPrompt:"Talk about someone whose speaking style you admire.",promptMarathi:"ज्यांची बोलण्याची शैली तुम्हाला आवडते अशा व्यक्तीबद्दल सांगा."},
+  {id:42,english:"perseverance",marathi:"चिकाटी",partOfSpeech:"noun",difficulty:"advanced",exampleSentence:"Her perseverance helped her finish the marathon.",sentenceMarathi:"तिच्या चिकाटीमुळे तिने मॅरेथॉन पूर्ण केली.",speakingPrompt:"Talk about a time perseverance helped you succeed.",promptMarathi:"चिकाटीमुळे तुम्हाला यश मिळाले त्या वेळेबद्दल सांगा."},
+  {id:43,english:"ambiguous",marathi:"संदिग्ध",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"His answer was too ambiguous to understand.",sentenceMarathi:"त्याचे उत्तर समजण्यासाठी खूप संदिग्ध होते.",speakingPrompt:"Talk about a time an instruction felt ambiguous to you.",promptMarathi:"एखादी सूचना तुम्हाला संदिग्ध वाटली त्या वेळेबद्दल सांगा."},
+  {id:44,english:"meticulous",marathi:"बारकाईने काम करणारा",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"She is meticulous about checking every detail.",sentenceMarathi:"ती प्रत्येक तपशील बारकाईने तपासते.",speakingPrompt:"Talk about a task where you had to be meticulous.",promptMarathi:"तुम्हाला बारकाईने काम करावे लागले अशा एका कामाबद्दल सांगा."},
+  {id:45,english:"resilience",marathi:"लवचिकता / धैर्य",partOfSpeech:"noun",difficulty:"advanced",exampleSentence:"The team showed great resilience after losing the first match.",sentenceMarathi:"पहिला सामना हरल्यानंतर टीमने मोठे धैर्य दाखवले.",speakingPrompt:"Talk about a time you showed resilience during a setback.",promptMarathi:"अडचणीच्या वेळी तुम्ही धैर्य दाखवले त्या वेळेबद्दल सांगा."},
+  {id:46,english:"articulate",marathi:"स्पष्टपणे व्यक्त करणे",partOfSpeech:"verb",difficulty:"advanced",exampleSentence:"He can articulate complex ideas very simply.",sentenceMarathi:"तो गुंतागुंतीच्या कल्पना अगदी सोप्या पद्धतीने मांडू शकतो.",speakingPrompt:"Talk about a complex idea you find hard to articulate.",promptMarathi:"तुम्हाला स्पष्टपणे मांडायला कठीण वाटणाऱ्या एका गुंतागुंतीच्या कल्पनेबद्दल सांगा."},
+  {id:47,english:"spontaneous",marathi:"उत्स्फूर्त",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"We took a spontaneous trip to the hills last weekend.",sentenceMarathi:"गेल्या शनिवार-रविवारी आम्ही टेकड्यांवर उत्स्फूर्त सहल केली.",speakingPrompt:"Talk about a spontaneous decision that turned out well.",promptMarathi:"एका उत्स्फूर्त निर्णयाबद्दल सांगा जो चांगला ठरला."},
+  {id:48,english:"versatile",marathi:"बहुगुणी",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"She is a versatile performer who can sing and dance.",sentenceMarathi:"ती एक बहुगुणी कलाकार आहे जी गाऊ आणि नाचू शकते.",speakingPrompt:"Talk about a skill that makes you versatile.",promptMarathi:"तुम्हाला बहुगुणी बनवणाऱ्या एका कौशल्याबद्दल सांगा."},
+  {id:49,english:"empathy",marathi:"सहानुभूती",partOfSpeech:"noun",difficulty:"advanced",exampleSentence:"Good leaders show empathy towards their team.",sentenceMarathi:"चांगले नेते त्यांच्या टीमबद्दल सहानुभूती दाखवतात.",speakingPrompt:"Talk about a time someone showed you empathy.",promptMarathi:"कोणीतरी तुमच्याशी सहानुभूतीने वागले त्या वेळेबद्दल सांगा."},
+  {id:50,english:"integrity",marathi:"सचोटी",partOfSpeech:"noun",difficulty:"advanced",exampleSentence:"He is known for his integrity at work.",sentenceMarathi:"तो कामाच्या ठिकाणी त्याच्या सचोटीसाठी ओळखला जातो.",speakingPrompt:"Talk about why integrity matters in daily life.",promptMarathi:"रोजच्या आयुष्यात सचोटी का महत्त्वाची आहे ते सांगा."},
+  {id:51,english:"innovative",marathi:"नाविन्यपूर्ण",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"The company is known for its innovative products.",sentenceMarathi:"ही कंपनी तिच्या नाविन्यपूर्ण उत्पादनांसाठी ओळखली जाते.",speakingPrompt:"Talk about an innovative idea you find inspiring.",promptMarathi:"तुम्हाला प्रेरणादायी वाटणाऱ्या एका नाविन्यपूर्ण कल्पनेबद्दल सांगा."},
+  {id:52,english:"pragmatic",marathi:"व्यवहार्य",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"We need a pragmatic solution to this problem.",sentenceMarathi:"या समस्येसाठी आपल्याला व्यवहार्य उपाय हवा आहे.",speakingPrompt:"Talk about a pragmatic decision you made recently.",promptMarathi:"अलीकडे तुम्ही घेतलेल्या एका व्यवहार्य निर्णयाबद्दल सांगा."},
+  {id:53,english:"tenacious",marathi:"चिवट / हट्टी",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"She remained tenacious even after several failures.",sentenceMarathi:"अनेक अपयशांनंतरही ती चिवट राहिली.",speakingPrompt:"Talk about a goal that required you to be tenacious.",promptMarathi:"चिवटपणा दाखवावा लागलेल्या एका ध्येयाबद्दल सांगा."},
+  {id:54,english:"profound",marathi:"गहन",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"The book had a profound impact on my thinking.",sentenceMarathi:"त्या पुस्तकाचा माझ्या विचारांवर गहन परिणाम झाला.",speakingPrompt:"Talk about something that had a profound effect on you.",promptMarathi:"तुमच्यावर गहन परिणाम करणाऱ्या एका गोष्टीबद्दल सांगा."},
+  {id:55,english:"candid",marathi:"मनमोकळा / स्पष्टवक्ता",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"I appreciate your candid feedback on my work.",sentenceMarathi:"माझ्या कामावरील तुमच्या स्पष्ट अभिप्रायाबद्दल मी आभारी आहे.",speakingPrompt:"Talk about a time someone gave you candid feedback.",promptMarathi:"कोणीतरी तुम्हाला स्पष्ट अभिप्राय दिला त्या वेळेबद्दल सांगा."},
+  {id:56,english:"diligent",marathi:"परिश्रमी",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"He is a diligent student who never misses class.",sentenceMarathi:"तो एक परिश्रमी विद्यार्थी आहे जो कधीही वर्ग चुकवत नाही.",speakingPrompt:"Talk about an area of your life where you are diligent.",promptMarathi:"तुमच्या आयुष्यातील ज्या भागात तुम्ही परिश्रमी आहात त्याबद्दल सांगा."},
+  {id:57,english:"benevolent",marathi:"परोपकारी",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"The benevolent donor funded the entire school.",sentenceMarathi:"त्या परोपकारी दात्याने संपूर्ण शाळेला निधी दिला.",speakingPrompt:"Talk about a benevolent act you witnessed.",promptMarathi:"तुम्ही पाहिलेल्या एका परोपकारी कृतीबद्दल सांगा."},
+  {id:58,english:"ubiquitous",marathi:"सर्वव्यापी",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"Smartphones have become ubiquitous in daily life.",sentenceMarathi:"स्मार्टफोन आता रोजच्या आयुष्यात सर्वव्यापी झाले आहेत.",speakingPrompt:"Talk about something that has become ubiquitous around you.",promptMarathi:"तुमच्या आजूबाजूला सर्वव्यापी झालेल्या एका गोष्टीबद्दल सांगा."},
+  {id:59,english:"authentic",marathi:"अस्सल",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"This restaurant serves authentic Maharashtrian food.",sentenceMarathi:"हे रेस्टॉरंट अस्सल महाराष्ट्रीयन जेवण देते.",speakingPrompt:"Talk about something you consider authentic to your culture.",promptMarathi:"तुमच्या संस्कृतीशी संबंधित अस्सल वाटणाऱ्या एका गोष्टीबद्दल सांगा."},
+  {id:60,english:"transparent",marathi:"पारदर्शक",partOfSpeech:"adjective",difficulty:"advanced",exampleSentence:"Good managers are transparent about company decisions.",sentenceMarathi:"चांगले व्यवस्थापक कंपनीच्या निर्णयांबाबत पारदर्शक असतात.",speakingPrompt:"Talk about why transparency matters in a team.",promptMarathi:"टीममध्ये पारदर्शकता का महत्त्वाची आहे ते सांगा."}
+];
+
+/* =========================================================
+   SCENARIO SIMULATOR — 8 scenarios × 10 lines each
+   ========================================================= */
+const SCENARIOS = [
+  {name:"Market",icon:"🛒",lines:[
+    "Excuse me, how much does this vegetable cost?",
+    "Can you give me a discount, please?",
+    "I would like one kilogram of tomatoes.",
+    "Do you have any fresh mangoes today?",
+    "Where can I find the rice section?",
+    "Is this fruit organic?",
+    "Can I pay by card?",
+    "Please pack these items separately.",
+    "Could you recommend something fresh today?",
+    "Thank you, have a nice day!"
+  ]},
+  {name:"Restaurant",icon:"🍽️",lines:[
+    "Hi, could I see the menu, please?",
+    "What do you recommend for a vegetarian dish?",
+    "I would like to order a coffee.",
+    "Can we get some water, please?",
+    "Is this dish spicy?",
+    "Could you bring the bill, please?",
+    "Can I get a table for two?",
+    "Do you have any dessert options?",
+    "Could you pack the leftovers for me?",
+    "The food was delicious, thank you!"
+  ]},
+  {name:"Hospital",icon:"🏥",lines:[
+    "I have a fever since yesterday.",
+    "Where is the reception desk?",
+    "I need to book an appointment with the doctor.",
+    "Does this medicine have any side effects?",
+    "I am allergic to certain medicines.",
+    "Can you tell me the visiting hours?",
+    "I need a prescription refill.",
+    "How long will the test results take?",
+    "Is the doctor available today?",
+    "Thank you doctor, I feel better now."
+  ]},
+  {name:"Office",icon:"💼",lines:[
+    "Good morning, could we start the meeting?",
+    "I have completed the report, shall I send it?",
+    "Can I take a day off tomorrow?",
+    "Could you review my presentation?",
+    "What is the deadline for this project?",
+    "Can we reschedule the call to 3 PM?",
+    "I need help with this spreadsheet.",
+    "Let's collaborate on this task together.",
+    "I would like to discuss my performance review.",
+    "Thank you for your feedback, I will improve it."
+  ]},
+  {name:"School",icon:"🏫",lines:[
+    "Good morning, may I come in?",
+    "Can you explain this topic again, please?",
+    "I have a doubt about the homework.",
+    "May I ask a question, teacher?",
+    "When is the next exam scheduled?",
+    "Can I borrow this book from the library?",
+    "I would like to join the debate club.",
+    "Could you check my assignment, please?",
+    "May I go to the washroom?",
+    "Thank you for teaching us today."
+  ]},
+  {name:"Airport",icon:"✈️",lines:[
+    "Where is the check-in counter?",
+    "Could you tell me the boarding gate number?",
+    "I would like a window seat, please.",
+    "Is my flight on time?",
+    "How much luggage am I allowed to carry?",
+    "Where is the baggage claim area?",
+    "I need to reschedule my flight.",
+    "Can you help me find the security check?",
+    "Excuse me, where is the nearest restroom?",
+    "Thank you for your help, have a safe flight!"
+  ]},
+  {name:"Bank",icon:"🏦",lines:[
+    "I would like to open a new savings account.",
+    "Can you help me with a fund transfer?",
+    "What is the current interest rate on fixed deposits?",
+    "I lost my debit card, what should I do?",
+    "Could you update my address in the records?",
+    "How do I apply for a loan?",
+    "I want to check my account balance.",
+    "Can I get a chequebook, please?",
+    "What documents do I need to submit?",
+    "Thank you for your assistance."
+  ]},
+  {name:"Hotel",icon:"🏨",lines:[
+    "I would like to check in, please.",
+    "Do you have a room available for two nights?",
+    "Could you provide extra towels, please?",
+    "What time is breakfast served?",
+    "Is Wi-Fi available in the room?",
+    "Can I get a wake-up call at 6 AM?",
+    "I would like to check out now.",
+    "Could you call a taxi for me?",
+    "Could I get a late checkout, please?",
+    "The room service was excellent, thank you."
+  ]}
+];
+
+/* =========================================================
+   TONGUE TWISTERS — 15
+   ========================================================= */
+const TWISTERS = [
+  {text:"She sells seashells by the seashore.",meaning:"ती समुद्रकिनाऱ्यावर शिंपले विकते."},
+  {text:"Peter Piper picked a peck of pickled peppers.",meaning:"पीटर पायपरने लोणच्याच्या मिरच्यांची एक पाटी उचलली."},
+  {text:"How much wood would a woodchuck chuck if a woodchuck could chuck wood?",meaning:"लाकूड फेकणारा प्राणी किती लाकूड फेकेल?"},
+  {text:"Betty bought a bit of butter, but the butter was bitter.",meaning:"बेट्टीने थोडे लोणी विकत घेतले, पण ते लोणी कडू होते."},
+  {text:"Fuzzy Wuzzy was a bear, Fuzzy Wuzzy had no hair.",meaning:"फझी वझी एक अस्वल होते, त्याला केस नव्हते."},
+  {text:"I scream, you scream, we all scream for ice cream.",meaning:"मी ओरडतो, तू ओरडतोस, आपण सगळे आइस्क्रीमसाठी ओरडतो."},
+  {text:"Red lorry, yellow lorry, red lorry, yellow lorry.",meaning:"लाल ट्रक, पिवळा ट्रक — वेगाने बोलण्याचा सराव."},
+  {text:"Unique New York, unique New York, you know you need unique New York.",meaning:"अनोखे न्यूयॉर्क — वेगवान उच्चारांचा सराव."},
+  {text:"Six slippery snails slid slowly seaward.",meaning:"सहा घसरणारे गोगलगाय हळू हळू समुद्राकडे सरकले."},
+  {text:"A proper copper coffee pot.",meaning:"एक योग्य तांब्याचे कॉफी भांडे."},
+  {text:"Which wristwatches are Swiss wristwatches?",meaning:"कोणती मनगटी घड्याळे स्विस मनगटी घड्याळे आहेत?"},
+  {text:"Toy boat, toy boat, toy boat.",meaning:"खेळण्यातली होडी — वेगाने तीनदा म्हणण्याचा सराव."},
+  {text:"The sixth sick sheikh's sixth sheep's sick.",meaning:"सहाव्या आजारी शेखाची सहावी मेंढी आजारी आहे."},
+  {text:"Can you can a can as a canner can can a can?",meaning:"डबाबंद करणारा जसा डबा बंद करू शकतो तसा तू करू शकतोस का?"},
+  {text:"Fresh fried fish, fish fresh fried, fried fish fresh.",meaning:"ताजा तळलेला मासा — शब्दांची पुनरावृत्ती करून वेगाचा सराव."}
+];
+
+/* =========================================================
+   Q&A BANK — 20
+   ========================================================= */
+const QNA = [
+  {q:"What did you do this morning?",m:"आज सकाळी तुम्ही काय केले?",a:"This morning I woke up early, had tea, and got ready for the day."},
+  {q:"What is your favorite season and why?",m:"तुमचा आवडता ऋतू कोणता आणि का?",a:"I love winter because the weather is cool and I enjoy wearing warm clothes."},
+  {q:"Describe your best friend.",m:"तुमच्या जिवलग मित्राचे वर्णन करा.",a:"My best friend is kind, funny, and always supports me when I need help."},
+  {q:"What are your plans for the weekend?",m:"शनिवार-रविवारसाठी तुमच्या काय योजना आहेत?",a:"I plan to relax at home, meet a few friends, and watch a movie."},
+  {q:"What is your favorite food and why do you like it?",m:"तुमचा आवडता पदार्थ कोणता आणि तो का आवडतो?",a:"I love vada pav because it reminds me of home and it's quick and tasty."},
+  {q:"Tell me about a memorable trip you took.",m:"तुम्ही केलेल्या एका संस्मरणीय सहलीबद्दल सांगा.",a:"I once visited the hills near Lonavala with my family, and the view was breathtaking."},
+  {q:"What do you do in your free time?",m:"तुमच्या मोकळ्या वेळेत तुम्ही काय करता?",a:"In my free time, I like reading books and listening to music."},
+  {q:"Describe your daily routine.",m:"तुमच्या रोजच्या दिनक्रमाचे वर्णन करा.",a:"I wake up at six, exercise, go to work, and spend the evening with family."},
+  {q:"What is your dream job?",m:"तुमची स्वप्नातील नोकरी कोणती आहे?",a:"My dream job is to become a teacher and help students learn confidently."},
+  {q:"Talk about a book or movie you enjoyed.",m:"तुम्हाला आवडलेल्या एका पुस्तकाबद्दल किंवा चित्रपटाबद्दल सांगा.",a:"I really enjoyed a movie about friendship — it made me laugh and think."},
+  {q:"What is your favorite festival and how do you celebrate it?",m:"तुमचा आवडता सण कोणता आणि तो तुम्ही कसा साजरा करता?",a:"Diwali is my favorite festival — we light lamps, cook sweets, and meet relatives."},
+  {q:"Describe your hometown.",m:"तुमच्या गावाचे किंवा शहराचे वर्णन करा.",a:"My hometown is a small, peaceful place with friendly people and green fields."},
+  {q:"What are three things you are grateful for?",m:"तुम्ही ज्या तीन गोष्टींसाठी कृतज्ञ आहात त्या सांगा.",a:"I am grateful for my health, my family, and the opportunity to learn every day."},
+  {q:"How do you usually spend your weekends?",m:"तुम्ही सहसा शनिवार-रविवार कसे घालवता?",a:"I usually clean my house, visit family, and rest before the new week starts."},
+  {q:"What is a skill you want to learn?",m:"तुम्हाला कोणते कौशल्य शिकायचे आहे?",a:"I want to learn public speaking so I can express my ideas more confidently."},
+  {q:"Describe a challenge you overcame recently.",m:"अलीकडे तुम्ही पार केलेल्या एका आव्हानाबद्दल सांगा.",a:"I struggled with speaking English in meetings, but daily practice made me more confident."},
+  {q:"What is your favorite way to relax?",m:"आराम करण्याची तुमची आवडती पद्धत कोणती?",a:"I relax by taking a walk outside and listening to calm music."},
+  {q:"Talk about your family.",m:"तुमच्या कुटुंबाबद्दल सांगा.",a:"I have a small, loving family, and we enjoy having dinner together every day."},
+  {q:"What motivates you to work hard?",m:"तुम्हाला कठोर परिश्रम करण्यास कशामुळे प्रेरणा मिळते?",a:"My family's support and my own goals motivate me to keep working hard."},
+  {q:"Describe your ideal vacation.",m:"तुमच्या आदर्श सुट्टीचे वर्णन करा.",a:"My ideal vacation is a quiet trip to the mountains with no phone and lots of rest."}
+];
+
+/* =========================================================
+   MISC DATA — badges, encouragements, daily challenges
+   ========================================================= */
+const BADGES = [
+  {id:"first",label:"🥇 First Speak",need:1},
+  {id:"ten",label:"🔟 10 Words Spoken",need:10},
+  {id:"fifty",label:"🏆 50 Words Spoken",need:50}
+];
+
+const ENCOURAGEMENTS = [
+  "छान बोललात! असंच सुरू ठेवा.",
+  "खूप छान प्रयत्न — तुमचा आत्मविश्वास वाढतोय!",
+  "सुंदर! रोज सराव केल्याने नक्की सुधारणा होईल.",
+  "वाह! तुम्ही स्पष्ट आणि आत्मविश्वासाने बोललात.",
+  "अप्रतिम! असाच सराव सुरू ठेवा."
+];
+
+const DAILY_CHALLENGES = [
+  "Speak 3 sentences about your morning — out loud, right now.",
+  "Pick any word above and use it in a brand-new sentence, spoken aloud.",
+  "Try the Scenario Simulator for the Restaurant and complete all 10 lines.",
+  "Answer any Q&A question in under 30 seconds without pausing.",
+  "Say a tongue twister 3 times, getting faster each time.",
+  "Describe your day so far in English for 60 seconds straight.",
+  "Practice introducing yourself in English as if meeting someone new."
+];
+
+/* =========================================================
+   STATE + STORAGE HELPERS
+   ========================================================= */
+const LS = {
+  get(key, fallback){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } },
+  set(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+};
+
+const todayStr = () => new Date().toISOString().slice(0,10);
+
+let state = {
+  wordIndex: 0,
+  streak: LS.get('ss_streak', {lastDate:null, count:0}),
+  practicedIds: LS.get('ss_practicedIds', []),
+  timeSeconds: LS.get('ss_timeSeconds', 0),
+  log: LS.get('ss_log', []),
+  dailyGoal: LS.get('ss_dailyGoal', {date:todayStr(), sentences:0}),
+  badges: LS.get('ss_badges', []),
+  theme: LS.get('ss_theme', null),
+  fontScale: LS.get('ss_fontScale', 1)
+};
+
+function persist(){
+  LS.set('ss_streak', state.streak);
+  LS.set('ss_practicedIds', state.practicedIds);
+  LS.set('ss_timeSeconds', state.timeSeconds);
+  LS.set('ss_log', state.log);
+  LS.set('ss_dailyGoal', state.dailyGoal);
+  LS.set('ss_badges', state.badges);
+}
+
+/* =========================================================
+   TOASTS
+   ========================================================= */
+function toast(msg){
+  const host = document.getElementById('toastHost');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  host.appendChild(el);
+  setTimeout(()=>{ el.remove(); }, 2600);
+}
+
+/* =========================================================
+   CONFETTI
+   ========================================================= */
+function confettiBurst(){
+  const colors = ['#FF6B35','#004E89','#F7C948','#2FAE66'];
+  for(let i=0;i<40;i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animation = `confettiFall ${1.6 + Math.random()*1.2}s ease-in forwards`;
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 3000);
+  }
+}
+
+/* =========================================================
+   STREAK + DAILY GOAL LOGIC
+   ========================================================= */
+function registerActivity(secondsSpent){
+  const today = todayStr();
+  if(state.streak.lastDate !== today){
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    state.streak.count = (state.streak.lastDate === yesterday) ? state.streak.count + 1 : 1;
+    state.streak.lastDate = today;
+    toast(`🔥 Voice streak: ${state.streak.count} day${state.streak.count>1?'s':''}!`);
+  }
+  if(state.dailyGoal.date !== today){ state.dailyGoal = {date:today, sentences:0}; }
+  if(secondsSpent){ state.timeSeconds += secondsSpent; }
+  persist();
+  renderStats();
+}
+
+function logSpeaking(label, tag){
+  state.log.unshift({label, tag, time:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})});
+  state.log = state.log.slice(0, 40);
+  state.dailyGoal.sentences += 1;
+  registerActivity(0);
+  checkBadges();
+  renderLog();
+  renderGoal();
+}
+
+function markWordPracticed(id){
+  if(!state.practicedIds.includes(id)){
+    state.practicedIds.push(id);
+    checkBadges();
+  }
+  registerActivity(0);
+  renderStats();
+}
+
+function checkBadges(){
+  const count = state.practicedIds.length + state.log.length;
+  BADGES.forEach(b=>{
+    if(count >= b.need && !state.badges.includes(b.id)){
+      state.badges.push(b.id);
+      toast(`🎉 Badge unlocked: ${b.label}`);
+      if(b.id !== 'first') confettiBurst();
+    }
+  });
+  if(state.log.length > 0 && state.log.length % 10 === 0){ confettiBurst(); }
+  persist();
+  renderBadges();
+}
+
+/* =========================================================
+   FLASHCARD / HERO
+   ========================================================= */
+const flashcard = document.getElementById('flashcard');
+const posBadge = document.getElementById('posBadge');
+const diffBadge = document.getElementById('diffBadge');
+
+function renderWord(){
+  const w = WORDS[state.wordIndex];
+  document.getElementById('progressLabel').textContent = `Word ${state.wordIndex+1} of ${WORDS.length}`;
+  document.getElementById('wordEn').textContent = w.english;
+  document.getElementById('wordPos').textContent = w.partOfSpeech;
+  document.getElementById('exampleSentence').textContent = w.exampleSentence;
+  document.getElementById('wordMarathi').textContent = w.marathi;
+  document.getElementById('sentenceMarathi').textContent = w.sentenceMarathi;
+  posBadge.textContent = w.partOfSpeech;
+  diffBadge.textContent = w.difficulty;
+  diffBadge.className = 'badge ' + w.difficulty;
+  flashcard.classList.remove('flipped');
+}
+
+function flipCard(){
+  flashcard.classList.toggle('flipped');
+  if(flashcard.classList.contains('flipped')){
+    markWordPracticed(WORDS[state.wordIndex].id);
+  }
+}
+flashcard.addEventListener('click', flipCard);
+flashcard.addEventListener('keydown', e=>{ if(e.key==='Enter') flipCard(); });
+document.getElementById('flipBtn').addEventListener('click', flipCard);
+
+document.getElementById('nextWordBtn').addEventListener('click', ()=>{
+  state.wordIndex = (state.wordIndex + 1) % WORDS.length;
+  renderWord();
+});
+document.getElementById('prevWordBtn').addEventListener('click', ()=>{
+  state.wordIndex = (state.wordIndex - 1 + WORDS.length) % WORDS.length;
+  renderWord();
+});
+
+let autoRotateTimer = setInterval(()=>{
+  state.wordIndex = (state.wordIndex + 1) % WORDS.length;
+  renderWord();
+}, 15000);
+
+document.addEventListener('keydown', e=>{
+  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.key === 'ArrowRight'){ document.getElementById('nextWordBtn').click(); }
+  if(e.key === 'ArrowLeft'){ document.getElementById('prevWordBtn').click(); }
+  if(e.key === ' ' && !document.querySelector('.panel.open')){
+    e.preventDefault();
+    document.getElementById('speakNowBtn').click();
+  }
+});
+
+document.getElementById('speakNowBtn').addEventListener('click', ()=>{
+  document.getElementById('modesSection').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+/* =========================================================
+   PRACTICE MODE SWITCHING
+   ========================================================= */
+const modeCards = document.querySelectorAll('.mode-card');
+const panels = { shadow: document.getElementById('panel-shadow'), scenario: document.getElementById('panel-scenario'), qna: document.getElementById('panel-qna'), twister: document.getElementById('panel-twister') };
+
+function openPanel(mode){
+  Object.values(panels).forEach(p=>p.classList.remove('open'));
+  modeCards.forEach(c=>c.classList.remove('active'));
+  panels[mode].classList.add('open');
+  document.querySelector(`.mode-card[data-mode="${mode}"]`).classList.add('active');
+  panels[mode].scrollIntoView({behavior:'smooth', block:'center'});
+  if(mode === 'shadow') startShadowSpeak();
+  if(mode === 'scenario') resetScenario();
+  if(mode === 'qna') loadRandomQuestion();
+  if(mode === 'twister') loadTwister(0);
+}
+
+modeCards.forEach(card=>{
+  card.addEventListener('click', ()=>openPanel(card.dataset.mode));
+  card.addEventListener('keydown', e=>{ if(e.key==='Enter') openPanel(card.dataset.mode); });
+});
+document.querySelectorAll('[data-close]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ btn.closest('.panel').classList.remove('open'); clearShadowTimers(); });
+});
+
+/* =========================================================
+   FEATURE A — SHADOW SPEAK
+   ========================================================= */
+let shadowTimers = [];
+function clearShadowTimers(){ shadowTimers.forEach(t=>clearTimeout(t)); shadowTimers = []; document.getElementById('shadowMic').querySelectorAll('.mic-ring').forEach(r=>r.classList.remove('pulsing')); }
+
+function startShadowSpeak(){
+  clearShadowTimers();
+  const w = WORDS[Math.floor(Math.random()*WORDS.length)];
+  const words = w.exampleSentence.split(' ');
+  const container = document.getElementById('shadowSentence');
+  container.innerHTML = words.map(word=>`<span>${word}</span>`).join(' ');
+  document.getElementById('shadowTranslation').textContent = '';
+  document.getElementById('shadowTranslation').dataset.full = w.sentenceMarathi;
+  markWordPracticed(w.id);
+}
+
+document.getElementById('shadowStartBtn').addEventListener('click', ()=>{
+  clearShadowTimers();
+  document.getElementById('shadowMic').querySelectorAll('.mic-ring').forEach(r=>r.classList.add('pulsing'));
+  const spans = document.querySelectorAll('#shadowSentence span');
+  spans.forEach((s,i)=>{
+    shadowTimers.push(setTimeout(()=>{
+      spans.forEach(x=>x.classList.remove('hl'));
+      s.classList.add('hl');
+    }, i * 420));
+  });
+  shadowTimers.push(setTimeout(()=>{
+    document.getElementById('shadowTranslation').textContent = document.getElementById('shadowTranslation').dataset.full;
+    logSpeaking('Shadow Speak sentence', 'shadow');
+  }, 5000));
+  shadowTimers.push(setTimeout(()=>{
+    document.getElementById('shadowMic').querySelectorAll('.mic-ring').forEach(r=>r.classList.remove('pulsing'));
+    startShadowSpeak();
+  }, 7000));
+});
+document.getElementById('shadowSkipBtn').addEventListener('click', ()=>{ clearShadowTimers(); startShadowSpeak(); });
+
+/* =========================================================
+   FEATURE B — SCENARIO SIMULATOR
+   ========================================================= */
+let scenarioState = { scenario:null, lineIndex:0, startTime:null };
+
+function resetScenario(){
+  const wrap = document.getElementById('scenarioSelect');
+  wrap.innerHTML = SCENARIOS.map((s,i)=>`<button class="scenario-btn" data-i="${i}">${s.icon} ${s.name}</button>`).join('');
+  wrap.querySelectorAll('.scenario-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>selectScenario(parseInt(btn.dataset.i)));
+  });
+  document.getElementById('scenarioLine').textContent = 'Pick a scenario above to begin.';
+  document.getElementById('scenarioMeta').textContent = '';
+  document.getElementById('scenarioTimer').style.display = 'none';
+  document.getElementById('scenarioNextBtn').disabled = true;
+}
+
+function selectScenario(i){
+  scenarioState = { scenario: SCENARIOS[i], lineIndex: 0, startTime: Date.now() };
+  document.querySelectorAll('.scenario-btn').forEach(b=>b.classList.toggle('active', parseInt(b.dataset.i)===i));
+  showScenarioLine();
+  document.getElementById('scenarioNextBtn').disabled = false;
+}
+
+function showScenarioLine(){
+  const {scenario, lineIndex} = scenarioState;
+  document.getElementById('scenarioMeta').textContent = `${scenario.icon} ${scenario.name} — line ${lineIndex+1} of ${scenario.lines.length}`;
+  document.getElementById('scenarioLine').textContent = scenario.lines[lineIndex];
+  document.getElementById('scenarioTimer').style.display = 'inline-block';
+  scenarioState.startTime = Date.now();
+  updateScenarioTimer();
+}
+
+let scenarioTimerInterval = null;
+function updateScenarioTimer(){
+  clearInterval(scenarioTimerInterval);
+  scenarioTimerInterval = setInterval(()=>{
+    const secs = ((Date.now() - scenarioState.startTime)/1000).toFixed(1);
+    document.getElementById('scenarioTimer').textContent = `${secs}s to respond`;
+  }, 100);
+}
+
+document.getElementById('scenarioNextBtn').addEventListener('click', ()=>{
+  if(!scenarioState.scenario) return;
+  clearInterval(scenarioTimerInterval);
+  logSpeaking(`${scenarioState.scenario.name}: line ${scenarioState.lineIndex+1}`, 'scenario');
+  scenarioState.lineIndex++;
+  if(scenarioState.lineIndex >= scenarioState.scenario.lines.length){
+    document.getElementById('scenarioLine').textContent = `✅ Scenario complete! Choose another scenario above.`;
+    document.getElementById('scenarioTimer').style.display = 'none';
+    document.getElementById('scenarioNextBtn').disabled = true;
+    toast(`Scenario complete: ${scenarioState.scenario.name}`);
+  } else {
+    showScenarioLine();
+  }
+});
+
+/* =========================================================
+   FEATURE C — QUESTION & ANSWER
+   ========================================================= */
+let qnaTimerInterval = null;
+let qnaSecondsLeft = 30;
+let currentQ = null;
+
+function loadRandomQuestion(){
+  clearInterval(qnaTimerInterval);
+  currentQ = QNA[Math.floor(Math.random()*QNA.length)];
+  document.getElementById('qnaQuestion').textContent = currentQ.q;
+  document.getElementById('qnaMarathi').textContent = currentQ.m;
+  document.getElementById('qnaAnswer').classList.remove('show');
+  document.getElementById('qnaAnswer').textContent = '';
+  qnaSecondsLeft = 30;
+  document.getElementById('qnaTimer').textContent = qnaSecondsLeft;
+  qnaTimerInterval = setInterval(()=>{
+    qnaSecondsLeft--;
+    document.getElementById('qnaTimer').textContent = Math.max(qnaSecondsLeft,0);
+    if(qnaSecondsLeft <= 0){
+      clearInterval(qnaTimerInterval);
+      toast('⏱️ Time up — how did it go?');
+    }
+  }, 1000);
+}
+document.getElementById('qnaRevealBtn').addEventListener('click', ()=>{
+  const el = document.getElementById('qnaAnswer');
+  el.textContent = currentQ.a;
+  el.classList.add('show');
+});
+document.getElementById('qnaNextBtn').addEventListener('click', loadRandomQuestion);
+document.getElementById('confGoodBtn').addEventListener('click', ()=>{ logSpeaking(currentQ.q, 'Q&A · confident'); toast('🙂 Logged — nice work!'); });
+document.getElementById('confStruggleBtn').addEventListener('click', ()=>{ logSpeaking(currentQ.q, 'Q&A · practiced'); toast('😅 Logged — practice makes it easier.'); });
+
+/* =========================================================
+   FEATURE D — TONGUE TWISTER CHALLENGE
+   ========================================================= */
+let twisterIndex = 0;
+let twisterStart = null;
+
+function loadTwister(i){
+  twisterIndex = i % TWISTERS.length;
+  const t = TWISTERS[twisterIndex];
+  document.getElementById('twisterText').textContent = t.text;
+  document.getElementById('twisterMeaning').textContent = t.meaning;
+  document.getElementById('wpsResult').textContent = '';
+  document.getElementById('twisterDoneBtn').disabled = true;
+}
+document.getElementById('twisterStartBtn').addEventListener('click', ()=>{
+  twisterStart = Date.now();
+  document.getElementById('twisterDoneBtn').disabled = false;
+  toast('🎙️ Go! Speak the tongue twister now.');
+});
+document.getElementById('twisterDoneBtn').addEventListener('click', ()=>{
+  if(!twisterStart) return;
+  const seconds = (Date.now() - twisterStart)/1000;
+  const wordCount = TWISTERS[twisterIndex].text.split(' ').length;
+  const wps = (wordCount/seconds).toFixed(2);
+  document.getElementById('wpsResult').textContent = `⏱️ ${seconds.toFixed(1)}s · ${wps} words/sec`;
+  logSpeaking('Tongue twister', 'twister');
+  document.getElementById('twisterDoneBtn').disabled = true;
+  twisterStart = null;
+});
+document.getElementById('twisterNextBtn').addEventListener('click', ()=>loadTwister(twisterIndex+1));
+
+/* =========================================================
+   VISUAL SPEAKING SIMULATOR (mic countdown + waveform)
+   ========================================================= */
+let waveInterval = null;
+document.getElementById('micStartBtn').addEventListener('click', ()=>{
+  const countdownEl = document.getElementById('micCountdown');
+  const startBtn = document.getElementById('micStartBtn');
+  const doneBtn = document.getElementById('micDoneBtn');
+  const encourage = document.getElementById('micEncourage');
+  encourage.textContent = '';
+  countdownEl.style.display = 'block';
+  startBtn.style.display = 'none';
+  let n = 3;
+  countdownEl.textContent = n;
+  const cd = setInterval(()=>{
+    n--;
+    if(n > 0){ countdownEl.textContent = n; }
+    else if(n === 0){ countdownEl.textContent = 'GO!'; }
+    else {
+      clearInterval(cd);
+      countdownEl.style.display = 'none';
+      doneBtn.style.display = 'inline-block';
+      const spans = document.querySelectorAll('#micWave span');
+      waveInterval = setInterval(()=>{
+        spans.forEach(s=>{ s.style.height = (10 + Math.random()*44) + 'px'; });
+      }, 130);
+    }
+  }, 700);
+});
+document.getElementById('micDoneBtn').addEventListener('click', ()=>{
+  clearInterval(waveInterval);
+  document.querySelectorAll('#micWave span').forEach(s=> s.style.height = '14px');
+  document.getElementById('micDoneBtn').style.display = 'none';
+  document.getElementById('micStartBtn').style.display = 'inline-block';
+  document.getElementById('micEncourage').textContent = ENCOURAGEMENTS[Math.floor(Math.random()*ENCOURAGEMENTS.length)];
+  logSpeaking('Visual speaking simulator', 'mic');
+});
+
+/* =========================================================
+   STATS DASHBOARD RENDER
+   ========================================================= */
+function renderStats(){
+  const wordsCount = state.practicedIds.length;
+  document.getElementById('wordsLearnedNum').textContent = wordsCount;
+  document.getElementById('wordsLearnedLabel').textContent = `${wordsCount} of ${WORDS.length}`;
+  document.getElementById('ringWords').style.setProperty('--pct', Math.round((wordsCount/WORDS.length)*100));
+
+  const minutes = Math.floor(state.timeSeconds/60);
+  document.getElementById('timePracticedNum').textContent = minutes;
+  document.getElementById('timePracticedLabel').textContent = `${minutes} minute${minutes===1?'':'s'}`;
+  document.getElementById('ringTime').style.setProperty('--pct', Math.min(Math.round((minutes/60)*100),100));
+
+  document.getElementById('streakNum').textContent = state.streak.count;
+  document.getElementById('streakLabel').textContent = `${state.streak.count} day${state.streak.count===1?'':'s'}`;
+  document.getElementById('ringStreak').style.setProperty('--pct', Math.min(state.streak.count*10,100));
+  document.getElementById('streakCount').textContent = state.streak.count;
+}
+
+function renderGoal(){
+  const s = Math.min(state.dailyGoal.sentences, 5);
+  document.getElementById('goalNum').textContent = s;
+  document.getElementById('goalRing').style.setProperty('--gpct', Math.round((s/5)*100));
+}
+
+function renderBadges(){
+  document.getElementById('badgesList').innerHTML = BADGES.map(b=>
+    `<span class="badge-pill ${state.badges.includes(b.id)?'unlocked':''}">${b.label}</span>`
+  ).join('');
+}
+
+function renderLog(){
+  const host = document.getElementById('logList');
+  if(state.log.length === 0){
+    host.innerHTML = '<div class="empty-log">Nothing logged yet — practice a word or scenario to start your log.</div>';
+    return;
+  }
+  host.innerHTML = state.log.map(item=>
+    `<div class="log-item"><span>${item.label}</span><span class="tag">${item.tag} · ${item.time}</span></div>`
+  ).join('');
+}
+
+/* =========================================================
+   DAILY CHALLENGE
+   ========================================================= */
+function loadDailyChallenge(){
+  const dayIndex = new Date().getDate() % DAILY_CHALLENGES.length;
+  document.getElementById('challengeText').textContent = DAILY_CHALLENGES[dayIndex];
+}
+document.getElementById('challengeGoBtn').addEventListener('click', ()=>{
+  document.getElementById('modesSection').scrollIntoView({behavior:'smooth'});
+  toast('Pick any mode above to take on today\'s challenge!');
+});
+
+/* =========================================================
+   THEME + FONT SIZE + OFFLINE STATUS
+   ========================================================= */
+function applyTheme(theme){
+  document.body.setAttribute('data-theme', theme);
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+  LS.set('ss_theme', theme);
+}
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+applyTheme(state.theme || (prefersDark ? 'dark' : 'light'));
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  applyTheme(document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+document.querySelectorAll('.font-size-group button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.documentElement.style.setProperty('--font-scale', btn.dataset.size);
+    document.querySelectorAll('.font-size-group button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    LS.set('ss_fontScale', btn.dataset.size);
+  });
+});
+(function initFontScale(){
+  document.documentElement.style.setProperty('--font-scale', state.fontScale);
+  document.querySelectorAll('.font-size-group button').forEach(b=>{
+    b.classList.toggle('active', parseFloat(b.dataset.size)===parseFloat(state.fontScale));
+  });
+})();
+
+function updateOfflineStatus(){
+  const online = navigator.onLine;
+  document.getElementById('offlineDot').classList.toggle('off', !online);
+  document.getElementById('statusLabel').textContent = online ? 'Online' : 'Offline — still works!';
+}
+window.addEventListener('online', updateOfflineStatus);
+window.addEventListener('offline', updateOfflineStatus);
+updateOfflineStatus();
+
+/* =========================================================
+   LAST VISITED TIMESTAMP
+   ========================================================= */
+(function lastVisited(){
+  const prev = LS.get('ss_lastVisited', null);
+  document.getElementById('lastVisited').textContent = prev ? new Date(prev).toLocaleString() : 'First visit — welcome!';
+  LS.set('ss_lastVisited', Date.now());
+})();
+
+/* =========================================================
+   INIT
+   ========================================================= */
+renderWord();
+renderStats();
+renderGoal();
+renderBadges();
+renderLog();
+loadDailyChallenge();
+
+</script>
+</body>
+</html>
